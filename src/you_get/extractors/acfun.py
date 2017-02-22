@@ -9,6 +9,7 @@ from .qq import qq_download_by_vid
 from .sina import sina_download_by_vid
 from .tudou import tudou_download_by_iid
 from .youku import youku_download_by_vid, youku_open_download_by_vid
+from .acorig import Acorig
 
 import json, re
 
@@ -52,7 +53,10 @@ def acfun_download_by_vid(vid, title, output_dir='.', merge=True, info_only=Fals
         s = json.loads(get_content(a, headers={'deviceType': '2'}))
         if s['data']['source'] == "zhuzhan-youku":
             sourceId = s['data']['sourceId']
-            youku_open_download_by_vid(client_id='908a519d032263f8', vid=sourceId, title=title, output_dir=output_dir,merge=merge, info_only=info_only, embsig = embsig, **kwargs)
+            #youku_open_download_by_vid(client_id='908a519d032263f8', vid=sourceId, title=title, output_dir=output_dir,merge=merge, info_only=info_only, embsig = embsig, **kwargs)
+            acorig = Acorig()
+            acorig.download_by_vid(vid=sourceId, title=title, output_dir=output_dir,merge=merge, info_only=info_only, embsig = embsig, **kwargs)
+
     else:
         raise NotImplementedError(sourceType)
 
