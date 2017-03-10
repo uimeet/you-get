@@ -29,7 +29,7 @@ class Acorig(VideoExtractor):
         self.embsig = kwargs['embsig']
         self.title = kwargs['title']
 
-        api = "http://aauth-vod.cn-beijing.aliyuncs.com/acfun/web?vid={}&ct={}&time={}&ev=2".format(self.vid, self.ct,int(time.time()*1000))
+        api = "http://aauth-vod.cn-beijing.aliyuncs.com/acfun/web?vid={}&ct={}&time={}&ev=2&sign={}".format(self.vid, self.ct,int(time.time()*1000), self.embsig)
         data = rc4(self.key, base64.b64decode(json.loads(get_content(api))['data']))
         stream_data = json.loads(data)
         for s in stream_data['stream']:
