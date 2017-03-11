@@ -85,7 +85,7 @@ def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only
         download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
 
 
-def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=False):
+def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=False, refer=None):
     sign_this = hashlib.md5(bytes('cid={cid}&from=miniplay&player=1{SECRETKEY_MINILOADER}'.format(cid = cid, SECRETKEY_MINILOADER = SECRETKEY_MINILOADER), 'utf-8')).hexdigest()
     url = 'http://interface.bilibili.com/playurl?&cid=' + cid + '&from=miniplay&player=1' + '&sign=' + sign_this
     urls = [i
@@ -101,7 +101,8 @@ def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=F
 
     print_info(site_info, title, type_, size)
     if not info_only:
-        download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
+        #download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
+        download_urls_chunked(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge, refer=refer, chunk_size=5242880)
 
 
 def bilibili_live_download_by_cid(cid, title, output_dir='.', merge=True, info_only=False):
@@ -178,7 +179,8 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
                                              completeTitle,
                                              output_dir=output_dir,
                                              merge=merge,
-                                             info_only=info_only)
+                                             info_only=info_only,
+                                             refer=url)
 
         elif t == 'vid':
             sina_download_by_vid(cid, title=title, output_dir=output_dir, merge=merge, info_only=info_only)
