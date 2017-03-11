@@ -619,7 +619,8 @@ def url_save_chunked(url, filepath, bar, dyn_callback=None, chunk_size=0, ignore
             output.write(buffer)
             received += len(buffer)
             if chunk_size and (received - this_chunk) >= chunk_size:
-                url = dyn_callback(received)
+                #url = dyn_callback(received)
+                headers['Range'] = 'bytes=' + str(received) + '-'
                 this_chunk = received
                 response = urlopen_with_retry(request.Request(url, headers=headers))
             if bar:
@@ -870,7 +871,7 @@ def download_urls(urls, title, ext, total_size, output_dir='.', refer=None, merg
 
     print()
 
-def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
+def download_urls_chunked(urls, title, ext, total_size, chunk_size=0, output_dir='.', refer=None, merge=True, faker=False, headers = {}, **kwargs):
     assert urls
     if dry_run:
         print('Real URLs:\n%s\n' % urls)
@@ -902,7 +903,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
         print('Downloading %s ...' % tr(filename))
         filepath = os.path.join(output_dir, filename)
         parts.append(filepath)
-        url_save_chunked(url, filepath, bar, refer = refer, faker = faker, headers = headers, **kwargs)
+        url_save_chunked(url, filepath, bar, chunk_size=chunk_size, refer = refer, faker = faker, headers = headers, **kwargs)
         bar.done()
 
         if not merge:
@@ -930,7 +931,7 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
             parts.append(filepath)
             #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
             bar.update_piece(i + 1)
-            url_save_chunked(url, filepath, bar, refer = refer, is_part = True, faker = faker, headers = headers)
+            url_save_chunked(url, filepath, bar, chunk_size=chunk_size, refer = refer, is_part = True, faker = faker, headers = headers)
         bar.done()
 
         if not merge:

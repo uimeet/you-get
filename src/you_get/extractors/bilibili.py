@@ -102,7 +102,9 @@ def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=F
     print_info(site_info, title, type_, size)
     if not info_only:
         #download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
-        download_urls_chunked(urls, title, type_, total_size=size, output_dir=output_dir, merge=merge, refer=refer, chunk_size=5242880)
+        download_urls_chunked(urls, title, type_
+                              , total_size=size, output_dir=output_dir, merge=merge, refer=refer
+                              , chunk_size=5242880)
 
 
 def bilibili_live_download_by_cid(cid, title, output_dir='.', merge=True, info_only=False):
