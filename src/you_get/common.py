@@ -542,7 +542,7 @@ def url_save(url, filepath, bar, refer = None, is_part = False, faker = False, h
 
         with open(temp_filepath, open_mode) as output:
             while True:
-                buffer = response.read(1024 * 256)
+                buffer = response.read(1024 * 1024)
                 if not buffer:
                     if received == file_size: # Download finished
                         break
@@ -602,7 +602,7 @@ def url_save_chunked(url, filepath, bar, dyn_callback=None, chunk_size=0, ignore
     else:
         headers = {}
     if received:
-        url = dyn_update_url(received)
+        #url = dyn_update_url(received)
         if not ignore_range:
             headers['Range'] = 'bytes=' + str(received) + '-'
     if refer:
@@ -613,7 +613,7 @@ def url_save_chunked(url, filepath, bar, dyn_callback=None, chunk_size=0, ignore
     with open(temp_filepath, open_mode) as output:
         this_chunk = received
         while True:
-            buffer = response.read(1024 * 256)
+            buffer = response.read(1024 * 1024)
             if not buffer:
                 break
             output.write(buffer)
@@ -882,6 +882,9 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
 
     title = tr(get_filename(title))
 
+    output_filename = get_output_filename(urls, title, ext, output_dir, merge)
+    output_filepath = os.path.join(output_dir, output_filename)
+
     filename = '%s.%s' % (title, ext)
     filepath = os.path.join(output_dir, filename)
     if total_size:
@@ -933,7 +936,48 @@ def download_urls_chunked(urls, title, ext, total_size, output_dir='.', refer=No
         if not merge:
             print()
             return
-        if ext == 'ts':
+
+        if 'av' in kwargs and kwargs['av']:
+            from .processor.ffmpeg import has_ffmpeg_installed
+            if has_ffmpeg_installed():
+                from .processor.ffmpeg import ffmpeg_concat_av
+                ret = ffmpeg_concat_av(parts, output_filepath, ext)
+                print('Merged into %s' % output_filename)
+                if ret == 0:
+                    for part in parts: os.remove(part)
+
+        elif ext in ['flv', 'f4v']:
+            try:
+                from .processor.ffmpeg import has_ffmpeg_installed
+                if has_ffmpeg_installed():
+                    from .processor.ffmpeg import ffmpeg_concat_flv_to_mp4
+                    ffmpeg_concat_flv_to_mp4(parts, output_filepath)
+                else:
+                    from .processor.join_flv import concat_flv
+                    concat_flv(parts, output_filepath)
+                print('Merged into %s' % output_filename)
+            except:
+                raise
+            else:
+                for part in parts:
+                    os.remove(part)
+
+        elif ext == 'mp4':
+            try:
+                from .processor.ffmpeg import has_ffmpeg_installed
+                if has_ffmpeg_installed():
+                    from .processor.ffmpeg import ffmpeg_concat_mp4_to_mp4
+                    ffmpeg_concat_mp4_to_mp4(parts, output_filepath)
+                else:
+                    from .processor.join_mp4 import concat_mp4
+                    concat_mp4(parts, output_filepath)
+                print('Merged into %s' % output_filename)
+            except:
+                raise
+            else:
+                for part in parts:
+                    os.remove(part)
+        elif ext == 'ts':
             from .processor.ffmpeg import has_ffmpeg_installed
             if has_ffmpeg_installed():
                 from .processor.ffmpeg import ffmpeg_concat_ts_to_mkv
