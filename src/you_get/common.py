@@ -308,6 +308,12 @@ def urlopen_with_retry(*args, **kwargs):
             return request.urlopen(*args, **kwargs)
         except socket.timeout:
             logging.debug('request attempt %s timeout' % str(i + 1))
+        except error.URLError as ue:
+            if 'timed out' in str(ue):
+                logging.warning('URLError:request attempt % timeout' % str(i + 1))
+                continue
+
+            raise ue
 
 def get_content(url, headers={}, decoded=True):
     """Gets the content of a URL via sending a HTTP GET request.
