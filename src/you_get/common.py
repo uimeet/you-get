@@ -310,7 +310,7 @@ def urlopen_with_retry(*args, **kwargs):
             logging.debug('request attempt %s timeout' % str(i + 1))
         except error.URLError as ue:
             if 'timed out' in str(ue):
-                logging.warning('request attempt %s timeout' % str(i + 1))
+                #logging.warning('request attempt %s timeout' % str(i + 1))
                 continue
 
             raise ue
