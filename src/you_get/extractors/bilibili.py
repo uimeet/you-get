@@ -154,7 +154,12 @@ def bilibili_download(url, output_dir='.', merge=True, info_only=False, **kwargs
                 cids = []
                 pages = re.findall('<option value=\'([^\']*)\'', html)
                 titles = re.findall('<option value=.*>\s*([^<>]+)\s*</option>', html)
+                just_single = url.endswith('.html')
                 for i, page in enumerate(pages):
+                    if just_single and not url.endswith(page):
+                        print('just_single is %s, skipping %s.' % (just_single, page))
+                        continue
+
                     html = get_html("http://www.bilibili.com%s" % page)
                     flashvars = r1_of([r'(cid=\d+)',
                                        r'flashvars="([^"]+)"',
