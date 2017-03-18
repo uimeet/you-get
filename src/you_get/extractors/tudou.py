@@ -7,7 +7,7 @@ from xml.dom.minidom import parseString
 import you_get.extractors.acfun
 
 def tudou_download_by_iid(iid, title, output_dir = '.', merge = True, info_only = False):
-    data = json.loads(get_decoded_html('http://www.tudou.com/outplay/goto/getItemSegs.action?iid=%s' % iid))
+    data = json.loads(get_decoded_html('http://www.tudou.com/outplay/goto/getItemSegs.action?areaCode=&code=%s' % iid))
     temp = max([data[i] for i in data if 'size' in data[i][0]], key=lambda x:sum([part['size'] for part in x]))
     vids, size = [t["k"] for t in temp], sum([t["size"] for t in temp])
 
