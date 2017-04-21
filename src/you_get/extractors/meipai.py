@@ -14,6 +14,8 @@ def meipai_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
     title = unescape_html(title)
     title = escape_file_path(title)
     title = title.strip()
+    title = re.sub(r'<a[^>]+>([^>]+)<-a>', '', title, flags = re.MULTILINE)
+    #title = re.sub(r'<a[^>]+>([^>]+)<-a>', '\g<1>', title, flags = re.MULTILINE)
     assert title
 
     video_encoded_url = r1(r'data-video="([^"]+)"', html)
