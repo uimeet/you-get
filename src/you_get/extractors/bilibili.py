@@ -86,17 +86,21 @@ def bilibili_download_by_cids(cids, title, output_dir='.', merge=True, info_only
 
 
 def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=False, refer=None):
+    headers = dict(fake_headers)
+    if refer:
+        headers['Referer'] = refer
+
     sign_this = hashlib.md5(bytes('cid={cid}&from=miniplay&player=1{SECRETKEY_MINILOADER}'.format(cid = cid, SECRETKEY_MINILOADER = SECRETKEY_MINILOADER), 'utf-8')).hexdigest()
     url = 'http://interface.bilibili.com/playurl?&cid=' + cid + '&from=miniplay&player=1' + '&sign=' + sign_this
     urls = [i
             if not re.match(r'.*\.qqvideo\.tc\.qq\.com', i)
             else re.sub(r'.*\.qqvideo\.tc\.qq\.com', 'http://vsrc.store.qq.com', i)
-            for i in parse_cid_playurl(get_content(url))]
+            for i in parse_cid_playurl(get_content(url, headers = headers))]
 
     type_ = ''
     size = 0
     for url in urls:
-        _, type_, temp = url_info(url)
+        _, type_, temp = url_info(url, headers = headers)
         size += temp or 0
 
     print_info(site_info, title, type_, size)
@@ -104,6 +108,7 @@ def bilibili_download_by_cid(cid, title, output_dir='.', merge=True, info_only=F
         #download_urls(urls, title, type_, total_size=None, output_dir=output_dir, merge=merge)
         download_urls_chunked(urls, title, type_
                               , total_size=size, output_dir=output_dir, merge=merge, refer=refer
+                              , headers = headers
                               , chunk_size=5242880)
 
 
