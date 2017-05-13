@@ -910,7 +910,8 @@ def download_urls_chunked(urls, title, ext, total_size, chunk_size=0, output_dir
         print('Downloading %s ...' % tr(filename))
         filepath = os.path.join(output_dir, filename)
         parts.append(filepath)
-        url_save_chunked(url, filepath, bar, chunk_size=chunk_size, refer = refer, faker = faker, headers = headers, **kwargs)
+
+        url_save_chunked(url, filepath, bar, chunk_size=chunk_size, refer=refer, faker=faker, headers=headers, **kwargs)
         bar.done()
 
         if not merge:
@@ -939,7 +940,7 @@ def download_urls_chunked(urls, title, ext, total_size, chunk_size=0, output_dir
             parts.append(filepath)
             #print 'Downloading %s [%s/%s]...' % (tr(filename), i + 1, len(urls))
             bar.update_piece(i + 1)
-            url_save_chunked(url, filepath, bar, chunk_size=chunk_size, refer = refer, is_part = True, faker = faker, headers = headers)
+            url_save_chunked(url, filepath, bar, chunk_size=chunk_size, refer = refer, is_part = True, faker = faker, headers = dict(headers))
         bar.done()
 
         if not merge:
